@@ -1,2 +1,2 @@
 # notes
-Notes in markdown format for SQL, Python, etc.
+Notes in markdown format for SQL, Python, JS/TS etc.
