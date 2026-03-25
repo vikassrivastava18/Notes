@@ -62,7 +62,7 @@ WHERE id=1;
 \l
 ``` 
 
-## Check a table fileds
+## Check a table fields
 ``` 
 \d "artist"
 ```
