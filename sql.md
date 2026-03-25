@@ -360,6 +360,20 @@ AND "order_id" != (
 ) 
 ORDER BY "amount" DESC
 LIMIT 1;
-```
 
+```
+Using Offset
+```
+SELECT "order_id", "amount" FROM "Orders"
+WHERE "customer_id" IN (
+	SELECT "customer_id" FROM (
+    SELECT COUNT("customer_id") AS "count", "customer_id"
+    FROM "Orders"
+    GROUP BY "customer_id"
+    HAVING "count" > 1
+    ))
+ORDER BY "amount" DESC
+LIMIT 1 
+OFFSET 1;
+```
 
