@@ -96,7 +96,7 @@ WHERE id=1;
 - A book can have zero to many translators, while a translator must have one or many translations.
 - An author has written one or many books and a book could be authored by one or many authors.
 - A publisher has published one or many books, but a book must be pusblished by one and only one publisher.
--  A book can have zero or one ratings, while a rating must be for one and only one book.
+- A book can have zero or one ratings, while a rating must be for one and only one book.
 
 
 ## Schema (Sqlite synatax)
@@ -242,7 +242,7 @@ SELECT "name" FROM "translators";
  );
  ```
 
- ## Group
+ ## Group By
 Select the book id's based on their avergae ratings
 ```
 SELECT "book_id", ROUND(AVG("rating"), 2) AS "Average Rating"
@@ -289,7 +289,6 @@ SELECT DISTINCT "first_name", "last_name"
 from "users";
 ```
 
-
 ## Alter schemas
 ```
 people=# CREATE TABLE "fav" (
@@ -312,3 +311,55 @@ CREATE TABLE "post" (
 );
 ALTER TABLE "post" ALTER COLUMN "content" TYPE TEXT;
 ```
+
+
+## Practice Queries
+
+Find the customers second highest amount, if it exists. 
+
++----------------------+
+|      Customers       |
++----------------------+
+| PK customer_id (int) |
+| first_name           |
+| last_name            |
+| age                  |
+| country              |
++----------------------+
+           |
+           | 1
+           |
+           |───────────────< places >───────────────
+                                                   |
+                                                   | *
+                                      +----------------------+
+                                      |        Orders        |
+                                      +----------------------+
+                                      | PK order_id (int)    |
+                                      | item                 |
+                                      | amount               |
+                                      | FK customer_id (int) |
+                                      +----------------------+
+```
+
+
+-- Find the second highest order
+SELECT "order_id", "amount" FROM "Orders" 
+WHERE "customer_id"= (
+  SELECT "customer_id" FROM (
+  SELECT COUNT("customer_id") AS "count", "customer_id"
+  FROM "Orders"
+  GROUP BY "customer_id"
+  HAVING "count" > 1
+))
+AND "order_id" != (
+	SELECT "order_id" FROM "Orders" 
+    WHERE "customer_id"=4
+    ORDER BY "amount" DESC
+    LIMIT 1
+) 
+ORDER BY "amount" DESC
+LIMIT 1;
+```
+
+
