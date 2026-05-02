@@ -13,7 +13,6 @@ This is due to peer authentication defined in the configuration
 
 ## Create a new user and database
 ```postgres=# CREATE USER new_user WITH PASSWORD 'secret_password';```
-
 ```postgres=# CREATE DATABASE "new_db" WITH OWNER 'new_user';```
 
 Connect to a database with a user
@@ -39,9 +38,9 @@ INSERT INTO "users" (username, age, address) VALUES ('vikas', 39, 'somewhere in 
 ## Insert multiple values
 ```
 INSERT INTO "album" ("title", "year")
-   VALUES
-     ('album 1', 2022),
-     ('album 2', 2000);
+VALUES
+    ('album 1', 2022),
+    ('album 2', 2000);
   ```
 
 ## Update an entry
@@ -96,7 +95,7 @@ WHERE id=1;
 - A book can have zero to many translators, while a translator must have one or many translations.
 - An author has written one or many books and a book could be authored by one or many authors.
 - A publisher has published one or many books, but a book must be pusblished by one and only one publisher.
-- A book can have zero or one ratings, while a rating must be for one and only one book.
+- A book can have zero or many ratings, while a rating must be for one and only one book.
 
 
 ## Schema (Sqlite synatax)
@@ -181,7 +180,7 @@ WHERE "id" IN (
 ```
 
 ### Join
-To find the booka and their corresponding ratings
+To find the books and their corresponding ratings
 ```
 SELECT "title", "year", "rating" FROM "books"
 JOIN "ratings" ON "ratings"."book_id" = "books"."id" LIMIT 100;
