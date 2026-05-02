@@ -76,12 +76,12 @@ WHERE id=1;
     +----------+         +-----------+         +------------+
     |  Author  |         | Publisher |         | Translator |
     +----------+         +-----------+         +------------+
-      1-M \                    | 1-1                / 0-M
+          \                    | (1-1)              / (0-M)
            \ wrote             | published         / translated
-            \                  | 1-M              /
-             \               +-+-+-+-+           /    
+            \                  | (1-M)            /
+      (1-M)  \               +-+-+-+-+           /    
               +------------->|       |<----------+
-                        1-M  | Book  | 1-M
+                        (1-M)| Book  | (1-M)
                              |       |
                              +-+-+-+-+
                                | 1-1
@@ -375,4 +375,34 @@ ORDER BY "amount" DESC
 LIMIT 1 
 OFFSET 1;
 ```
+
+## Normalization
+```
+Database normalization is a database design process that organizes data into specific table structures. It helps data integrity, prevent data anomalies and minimizes redundancy.
+```
+
+### 1NF 
+The structural foundation
+```
+Every column must have a unique name and every cell must contain a single indivisible value.
+```
+You can't put a list of items into a single cell. For example, in an "Orders" table, you can't add "Milk, Eggs, Bread" in one cell for column "Product Name".
+
+### 2NF
+Eliminating partial dependencies
+```
+A table must be in 1NF, and all non-key columns must rely on the entire composite key, not just part of it
+```
+Composite key - When a row is identified by a combination of two or more keys.
+You should store data where it completely belongs. If you have a table where key is (OrderID, ProductID), a column like "ProductPrice" shouldn't be int it because it depends on ProductID and not OrderID
+
+### 3NF
+Eliminating transitive dependencies
+```
+A table must be in 2NF, and non-key columns must depend only on the primary key, not on any othe non-key column.
+```
+Avoid having one non-key data determine the value of another non-key piece of data. 
+Consider an "Employees" table that stores an Office ID (a non-key column) and the Office Location(another non-key column). The Office location id determined by Office ID and not on Employees ID, so it should not be in the Employees table due to transitive dependency.
+
+
 
