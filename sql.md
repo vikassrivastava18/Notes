@@ -315,7 +315,7 @@ ALTER TABLE "post" ALTER COLUMN "content" TYPE TEXT;
 ## Practice Queries
 
 Find the customers second highest amount, if it exists. 
-
+```
 +----------------------+
 |      Customers       |
 +----------------------+
@@ -341,7 +341,7 @@ Find the customers second highest amount, if it exists.
                                       +----------------------+
 ```
 
-
+```
 -- Find the second highest order
 SELECT "order_id", "amount" FROM "Orders" 
 WHERE "customer_id"= (
