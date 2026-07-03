@@ -406,4 +406,41 @@ Avoid having one non-key data determine the value of another non-key piece of da
 Consider an "Employees" table that stores an Office ID (a non-key column) and the Office Location(another non-key column). The Office location id determined by Office ID and not on Employees ID, so it should not be in the Employees table due to transitive dependency.
 
 
+## Indexing
+
+Time your query (SQLite)
+``` 
+.timer on 
+```
+
+Get the query plan for indexing
+```
+EXPLAIN QUERY PLAN
+SELECT "title" FROM "movies" WHERE "id" IN (
+    SELECT "movie_id" FROM "stars" WHERE "person_id" = (
+        SELECT "id" FROM "people" WHERE "name" = 'Tom Hanks'
+    )
+);
+
+QUERY PLAN
+|--SEARCH movies USING INTEGER PRIMARY KEY (rowid=?)
+`--LIST SUBQUERY 2
+   |--SCAN stars
+   `--SCALAR SUBQUERY 1
+      `--SCAN people
+```
+
+Create Index
+```
+CREATE INDEX "person_index" ON "stars" ("person_id");
+CREATE INDEX "name_index" ON "people" ("name");
+```
+
+Drop Index
+```
+DROP INDEX "person_index";
+```
+
+
+
 
