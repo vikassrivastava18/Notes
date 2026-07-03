@@ -157,7 +157,7 @@ CREATE TABLE IF NOT EXISTS "ratings" (
 
 ## Queries
 ### Subquery
-To find all the ratings for the book In Memory of Memory
+To find all the ratings for the book "In Memory of Memory"
 ```
 SELECT "rating" FROM "ratings"
 WHERE "book_id" = (
@@ -167,7 +167,7 @@ WHERE "book_id" = (
 ```
 
 ### In
-To find the names of all books in the database written by Fernanda Melchor
+To find the names of all books in the database written by "Fernanda Melchor"
 ```
 SELECT "title" FROM "books"
 WHERE "id" IN (
@@ -378,7 +378,8 @@ OFFSET 1;
 
 ## Normalization
 ```
-Database normalization is a database design process that organizes data into specific table structures. It helps data integrity, prevent data anomalies and minimizes redundancy.
+Database normalization is a database design process that organizes data into specific table structures.
+It helps data integrity, prevent data anomalies and minimizes redundancy.
 ```
 
 ### 1NF 
