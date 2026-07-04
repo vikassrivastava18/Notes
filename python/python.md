@@ -17,9 +17,9 @@ Additional Patterns
 \S not a whitespace character
 \w  word character, as well as numbers and underscore
 ```
-
 Pattern matching (Returns True/False)
-Below regex searches for a pattern starting with `w` (includes word character, digits, underscore). It should be followed by `@`, then one or more `w` and `.` together. It must have end with something in the group: edu or com ....
+Below regex searches for a pattern starting with `w` (includes word character, digits, underscore). It should be followed by 
+`@`, then one or more `w` and `.` together. It must have end with something in the group: edu or com ....
 ```
 if re.search(r"^\w+@(\w+\.)?\w+\.(edu|com|org|net|gov)$", email):
     print("Valid")
@@ -150,4 +150,68 @@ class Truck(Vehicle):
 
 class Motorcycle(Vehicle):
     pass
+```
+
+## Lambda function
+```
+check_number = lambda x: "Positive" if x > 0 else "Negative" if x < 0 else "Zero"
+print(check_number(0))
+
+sum_product = lambda x, y: (x + y, x * y)
+print(sum_product(3,4))
+
+a = [1,2,3,4,5]
+mult_reducer = reduce(lambda x, y: x * y, a)
+print(mult_reducer)
+```
+
+## Decorators
+```
+def my_decorator(func):
+    def wrapper():
+        print("Before calling the function.")
+        func()
+        print("After calling the function.")
+    return wrapper
+
+@my_decorator
+def say_hello():
+    print(f"Hello there")
+
+# say_hello()
+# Decorators with argument
+def my_decorator_with_arg(func):
+    def wrapper(*args, **kwargs):
+        print("Before calling the function.")
+        func(*args, **kwargs)
+    return wrapper
+
+@my_decorator_with_arg
+def say_hello_with_name(*args):
+    names = " ".join(args)
+    print(f"Hello {names}!")
+
+# say_hello_with_name("Vikas", "Srivastava")
+
+@my_decorator_with_arg
+def say_hello_with_name(**kwargs):
+    name = " ".join(kwargs.values())
+    print(f"hello {name}")
+
+# print(say_hello_with_name(first_name="Vikas", last_name="Srivastava"))
+
+def log_arguments(func):
+    def wrapper(*args, **kwargs):
+        print("KWARGS:", kwargs)
+        print(f"Arguments were: {args}, {kwargs}")
+        return func(*args, **kwargs)
+    return wrapper
+
+@log_arguments
+def add(*args, **kwargs):
+    print("kwargs type", type(kwargs))
+    print("args type: ", type(args))
+    return sum(args) + sum(kwargs.values())
+
+print(add(2, 4, num=1, ber=3))
 ```
