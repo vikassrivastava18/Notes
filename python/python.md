@@ -46,7 +46,6 @@ if matches := re.search(f"^https?://(www\.)?twitter\.com/(.+)", url, re.IGNORECA
     print(matches.groups())
 ```
 
-
 ## OOP
 ```
 class Milk:
