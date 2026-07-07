@@ -3,7 +3,8 @@ type of variable is automatically inferred to be of string
 ```let helloWorld = "Hello world!"```
 
 ## Defining types
-```interface User {
+```
+interface User {
     "name": string;
     id: number;
 }
@@ -49,6 +50,7 @@ interface Backpack<Type> {
 ```
 
 ## Structural Type System
+```
 interface Point {
     x: number;
     y: number;
@@ -57,6 +59,7 @@ interface Point {
 function logPoint(p: Point) {
     console.log(`Point: (${p.x}, ${p.y})`)
 }
+```
 
 ## Class
 ```
