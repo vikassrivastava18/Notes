@@ -1,0 +1,446 @@
+# Database concepts and implementation
+
+## Starting PostgreSQL with command line  
+```psql -U postgres```
+
+** In case of failure **
+This is due to peer authentication defined in the configuration
+- Find the config file (pg_hba.conf): ```sudo find / -name pg_hba.conf```
+- Edit the file ```sudo nano /etc/postgresql/<version>/main/pg_hba.conf```: peer -> md5
+- Restart the postgres: ```sudo systemctl restart postgres(ql)```
+- Set your password: ```sudo -u postgres psql```
+- Alter password: ```ALTER USER postgres PASSWORD 'yourpassword';```
+
+## Create a new user and database
+```postgres=# CREATE USER new_user WITH PASSWORD 'secret_password';```
+```postgres=# CREATE DATABASE "new_db" WITH OWNER 'new_user';```
+
+Connect to a database with a user
+```$psql new_db new_user```
+
+
+## Create a table
+```
+CREATE TABLE user (
+    id SERIAL,
+    username VARCHAR(100) UNIQUE,
+    age INTEGER, 
+    address VARCHAR(4096),
+    PRIMARY KEY(id)
+)
+```
+
+## Insert into database
+```
+INSERT INTO "users" (username, age, address) VALUES ('vikas', 39, 'somewhere in the universe');
+```
+
+## Insert multiple values
+```
+INSERT INTO "album" ("title", "year")
+VALUES
+    ('album 1', 2022),
+    ('album 2', 2000);
+  ```
+
+## Update an entry
+```
+UPDATE "users"
+SET "address"='Somewhere in the universe.'
+WHERE id=1;
+```
+
+## Delete an entry
+```
+DELETE FROM "users"
+WHERE id=1;
+```
+
+## Find all the databases in PostgreSQL
+```
+\l
+``` 
+
+## Check a table fields
+``` 
+\d "artist"
+```
+
+## Show all tables in the database
+```
+\dt
+```
+
+## ERD
+```
+    +----------+         +-----------+         +------------+
+    |  Author  |         | Publisher |         | Translator |
+    +----------+         +-----------+         +------------+
+          \                    | (1-1)              / (0-M)
+           \ wrote             | published         / translated
+            \                  | (1-M)            /
+      (1-M)  \               +-+-+-+-+           /    
+              +------------->|       |<----------+
+                        (1-M)| Book  | (1-M)
+                             |       |
+                             +-+-+-+-+
+                               | 1-1
+                               | 
+                               | has                        
+                               | 0-M
+                         +-----------+
+                         |  Rating   |
+                         +-----------+
+```
+- A book can have zero to many translators, while a translator must have one or many translations.
+- An author has written one or many books and a book could be authored by one or many authors.
+- A publisher has published one or many books, but a book must be pusblished by one and only one publisher.
+- A book can have zero or many ratings, while a rating must be for one and only one book.
+
+
+## Schema (Sqlite synatax)
+```
+CREATE TABLE IF NOT EXISTS "authors" (
+    "id" INTEGER,
+    "name" TEXT,
+    "country" TEXT,
+    "birth" INTEGER,
+    PRIMARY KEY("id")
+);
+
+CREATE TABLE IF NOT EXISTS "publishers" (
+    "id" INTEGER,
+    "publisher" TEXT,
+    PRIMARY KEY("id")
+);
+
+CREATE TABLE IF NOT EXISTS "translators" (
+    "id" INTEGER,
+    "name" TEXT,
+    PRIMARY KEY("id")
+);
+
+
+CREATE TABLE IF NOT EXISTS "books" (
+    "id" INTEGER,
+    "isbn" TEXT,
+    "title" TEXT,
+    "publisher_id" INTEGER,
+    "format" TEXT,
+    "pages" INTEGER,
+    "published" TEXT,
+    "year" INTEGER,
+    PRIMARY KEY("id"),
+    FOREIGN KEY("publisher_id") REFERENCES "publishers"("id")
+);
+
+CREATE TABLE IF NOT EXISTS "authored" (
+    "author_id" INTEGER,
+    "book_id" INTEGER,
+    FOREIGN KEY("author_id") REFERENCES "authors"("id"),
+    FOREIGN KEY("book_id") REFERENCES "books"("id")
+);
+
+CREATE TABLE IF NOT EXISTS "translated" (
+    "translator_id" INTEGER,
+    "book_id" INTEGER,
+    FOREIGN KEY("translator_id") REFERENCES "translators"("id"),
+    FOREIGN KEY("book_id") REFERENCES "books"("id")
+);
+
+CREATE TABLE IF NOT EXISTS "ratings" (
+    "book_id" INTEGER,
+    "rating" INTEGER,
+    FOREIGN KEY("book_id") REFERENCES "books"("id")
+);
+```
+
+## Queries
+### Subquery
+To find all the ratings for the book "In Memory of Memory"
+```
+SELECT "rating" FROM "ratings"
+WHERE "book_id" = (
+    SELECT "id" FROM "books"
+    WHERE "title" = 'In Memory of Memory'
+);
+```
+
+### In
+To find the names of all books in the database written by "Fernanda Melchor"
+```
+SELECT "title" FROM "books"
+WHERE "id" IN (
+    SELECT "book_id" FROM "authored"
+    WHERE "author_id" = (
+        SELECT "id" FROM "authors"
+        WHERE "name" = 'Fernanda Melchor'
+    )
+);
+```
+
+### Join
+To find the books and their corresponding ratings
+```
+SELECT "title", "year", "rating" FROM "books"
+JOIN "ratings" ON "ratings"."book_id" = "books"."id" LIMIT 100;
+```
+
+### Natural Join
+If two table share the same joining name. If in the above example, books primary key was "book_id"
+```
+SELECT "title", "year", "rating" FROM "books"
+NATURAL JOIN "ratings" LIMIT 100;
+```
+
+## Sets
+### Intersect
+Find all the authors who are also translators
+```
+SELECT "name" FROM "authors"
+INTERSECT
+SELECT "name" FROM "translators";
+```
+### Union
+Find all the authors and translators
+```
+SELECT "name" FROM "authors"
+UNION
+SELECT "name" FROM "translators";
+```
+Add "profession" column in result
+```
+SELECT "name", "author" AS "profession" FROM "authors"
+UNION
+SELECT "name", "translator" AS "profession" FROM "translators";
+```
+
+### Except
+Author and Only an author
+```
+SELECT "name" FROM "authors"
+EXCEPT 
+SELECT "name" FROM "translators";
+```
+
+ find the books that Sophie Hughes and Margaret Jull Costa have translated together
+ ```
+ SELECT "title", "id" FROM "books"
+ WHERE "id" IN (
+    SELECT "book_id" FROM "translated"
+    WHERE "translator_id" = (
+        SELECT "id" FROM "translators"
+        WHERE "name" = 'Sophie Hughes' 
+    )
+    INTERSECT
+    SELECT "book_id" FROM "translated"
+    WHERE "translator_id" = (
+        SELECT "id" FROM "translators"
+        WHERE "name" = 'Margaret Jull Costa' 
+    )
+ );
+ ```
+
+ ## Group By
+Select the book id's based on their avergae ratings
+```
+SELECT "book_id", ROUND(AVG("rating"), 2) AS "Average Rating"
+FROM "ratings"
+GROUP BY "book_id";
+```
+Select the book names and their average ratings
+```
+SELECT "title", "Average Rating"
+FROM "books"
+JOIN (
+    SELECT "book_id", ROUND(AVG("rating"), 2) AS "Average Rating"
+    FROM "ratings"
+    GROUP BY "book_id"
+) AS "book_ratings"
+ON "book_ratings"."book_id" = "books"."id";
+```
+
+### Having
+```
+SELECT "book_id", ROUND(AVG("rating"), 2) AS "average rating"
+FROM "ratings"
+GROUP BY "book_id"
+HAVING "average rating" > 4.0
+ORDER BY "average rating" DESC;
+```
+With name
+```
+SELECT "title", "book_id", "Average Rating"
+FROM "books"
+JOIN (
+    SELECT "book_id", ROUND(AVG("rating"), 2) AS "Average Rating"
+    FROM "ratings"
+    GROUP BY "book_id"
+    HAVING "Average Rating" > 4.0
+    ORDER BY "Average Rating" DESC
+) AS "book_ratings"
+ON "book_ratings"."book_id" = "books"."id";
+```
+
+### DISTINCT
+```
+SELECT DISTINCT "first_name", "last_name"
+from "users";
+```
+
+## Alter schemas
+```
+people=# CREATE TABLE "fav" (
+  "id" SERIAL,
+  "oops" TEXT,
+  "post_id" INTEGER REFERENCES "post"("id") ON DELETE CASCADE,
+  PRIMARY KEY("id")
+);
+ALTER TABLE "fav" DROP COLUMN "oops";
+ALTER TABLE "fav" ADD COLUMN "howmuch" INTEGER;
+
+CREATE TABLE "post" (
+  "id" SERIAL,
+  "title" VARCHAR(128) UNIQUE NOT NULL,
+  "content" VARCHAR(128), -- WILL extend with alter
+  "account_id" INTEGER REFERENCES "account"("id") ON DELETE CASCADE,
+  "created_at" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  "updated_at" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  PRIMARY KEY("id")
+);
+ALTER TABLE "post" ALTER COLUMN "content" TYPE TEXT;
+```
+
+
+## Practice Queries
+
+Find the customers second highest amount, if it exists. 
+```
++----------------------+
+|      Customers       |
++----------------------+
+| PK customer_id (int) |
+| first_name           |
+| last_name            |
+| age                  |
+| country              |
++----------------------+
+           |
+           | 1
+           |
+           |───────────────< places >───────────────
+                                                   |
+                                                   | *
+                                      +----------------------+
+                                      |        Orders        |
+                                      +----------------------+
+                                      | PK order_id (int)    |
+                                      | item                 |
+                                      | amount               |
+                                      | FK customer_id (int) |
+                                      +----------------------+
+```
+
+```
+-- Find the second highest order
+SELECT "order_id", "amount" FROM "Orders" 
+WHERE "customer_id"= (
+  SELECT "customer_id" FROM (
+  SELECT COUNT("customer_id") AS "count", "customer_id"
+  FROM "Orders"
+  GROUP BY "customer_id"
+  HAVING "count" > 1
+))
+AND "order_id" != (
+	SELECT "order_id" FROM "Orders" 
+    WHERE "customer_id"=4
+    ORDER BY "amount" DESC
+    LIMIT 1
+) 
+ORDER BY "amount" DESC
+LIMIT 1;
+
+```
+Using Offset
+```
+SELECT "order_id", "amount" FROM "Orders"
+WHERE "customer_id" IN (
+	SELECT "customer_id" FROM (
+    SELECT COUNT("customer_id") AS "count", "customer_id"
+    FROM "Orders"
+    GROUP BY "customer_id"
+    HAVING "count" > 1
+    ))
+ORDER BY "amount" DESC
+LIMIT 1 
+OFFSET 1;
+```
+
+## Normalization
+```
+Database normalization is a database design process that organizes data into specific table structures.
+It helps data integrity, prevent data anomalies and minimizes redundancy.
+```
+
+### 1NF 
+The structural foundation
+```
+Every column must have a unique name and every cell must contain a single indivisible value.
+```
+You can't put a list of items into a single cell. For example, in an "Orders" table, you can't add "Milk, Eggs, Bread" in one cell for column "Product Name".
+
+### 2NF
+Eliminating partial dependencies
+```
+A table must be in 1NF, and all non-key columns must rely on the entire composite key, not just part of it
+```
+Composite key - When a row is identified by a combination of two or more keys.
+You should store data where it completely belongs. If you have a table where key is (OrderID, ProductID), a column like "ProductPrice" shouldn't be int it because it depends on ProductID and not OrderID
+
+### 3NF
+Eliminating transitive dependencies
+```
+A table must be in 2NF, and non-key columns must depend only on the primary key, not on any othe non-key column.
+```
+Avoid having one non-key data determine the value of another non-key piece of data. 
+Consider an "Employees" table that stores an Office ID (a non-key column) and the Office Location(another non-key column). The Office location id determined by Office ID and not on Employees ID, so it should not be in the Employees table due to transitive dependency.
+
+
+## Indexing
+
+Time your query (SQLite)
+``` 
+.timer on 
+```
+
+Get the query plan for indexing
+```
+EXPLAIN QUERY PLAN
+SELECT "title" FROM "movies" WHERE "id" IN (
+    SELECT "movie_id" FROM "stars" WHERE "person_id" = (
+        SELECT "id" FROM "people" WHERE "name" = 'Tom Hanks'
+    )
+);
+
+QUERY PLAN
+|--SEARCH movies USING INTEGER PRIMARY KEY (rowid=?)
+`--LIST SUBQUERY 2
+   |--SCAN stars
+   `--SCALAR SUBQUERY 1
+      `--SCAN people
+```
+
+Create Index
+```
+CREATE INDEX "person_index" ON "stars" ("person_id");
+CREATE INDEX "name_index" ON "people" ("name");
+```
+
+Drop Index
+```
+DROP INDEX "person_index";
+```
+
+
+
+
