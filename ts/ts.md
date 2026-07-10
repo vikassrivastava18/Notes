@@ -75,8 +75,3 @@ class VirtualPoint {
 
 const newPoint = new VirtualPoint(13, 56)
 ```
-
-
-
-
-
