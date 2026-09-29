@@ -11,7 +11,7 @@ It is Retreival-Augmented Generation, a technique of augmenting a language model
 
 
 ### RAG vs Fine Tuning
-Fine-tuning changes weight, so it learns a new skill, style or format like answering in a company's specific support-ticket voice. RAG changes the context, supplies fresh facts before inferce for grounded response.
+Fine-tuning changes weight, so it learns a new skill, style or format like answering in a company's specific support-ticket voice. RAG changes the context, supplies fresh facts for grounded response.
 
 
 
