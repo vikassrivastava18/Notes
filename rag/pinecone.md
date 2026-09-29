@@ -49,7 +49,7 @@ vectors = [
     },
 ]
 
-Same method - index.upsert(vectors=vectors)
+Same method: index.upsert(vectors=vectors)
 ```
 
 ## Accessing vectors

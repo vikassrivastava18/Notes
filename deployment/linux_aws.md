@@ -109,10 +109,3 @@ docker container stats
 ```
 
 ```
-
-
-
-
-
-
-

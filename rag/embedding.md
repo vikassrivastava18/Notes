@@ -6,11 +6,11 @@
 
 ### What is embedding?
 <p>
-It is a fixed length dense vector of size say 384 or 1536 carrying the meaning (semantics) of the chunk. A "Dense" embedding is short and every slot carries meaning, in contrast with <i>sparse</i>, vector which has mostly-zero slot per vocabulary word.
+An embedding is a fixed-length dense vector, say of size 384 or 1536, that represents semantic information about a chunk of text. In a dense embedding, information is distributed across many dimensions, with most dimensions having non-zero values. This contrasts with a sparse vector, which can have a very large number of dimensions—often corresponding to vocabulary terms—but has mostly-zero entries.
 </p>
 
 ### Cosine similarity
-<p>It is generally used to find the best match between the quesry and the embeddings. The similarity search score may vary based on embedding models used. </p>
+<p>It is generally used to find the best match between the query and the embeddings. The similarity search score may vary based on embedding models used. </p>
 
 
 ### Summary
