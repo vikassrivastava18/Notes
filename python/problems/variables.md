@@ -4,12 +4,11 @@ We’ve seen that n = 17 is legal. What about 17 = n?
 
 How about x = y = 1?
 
-In some languages every statement ends with a semi-colon (;). What happens if you put a semi-colon at the end of a Python statement?
+In some languages every statement ends with a semi-colon ';'. What happens if you put a semi-colon at the end of a Python statement?
 
 What if you put a period at the end of a statement?
 
 What happens if you spell the name of a module wrong and try to import maath?
-
 
 
 
