@@ -14,7 +14,7 @@ typedef struct node
     struct node *next;
 } node;
 
-#define N 10
+#define N 500
 typedef unsigned char BYTE;
 
 // Hash table
@@ -23,17 +23,50 @@ node *table[N];
 // Returns true if word is in dictionary, else false
 bool check(const char *word)
 {
-    // TODO
+    int h = hash(word);
+
+    if (table[h] == NULL) {
+        return false;
+    }
+
+    node *word_bucket = table[h];
+
+    if (strcmp(word_bucket->word, word) == 0) {
+        return true;
+    }
+    while (word_bucket->next != NULL) {
+        word_bucket = word_bucket->next;
+
+        if (strcmp(word_bucket->word, word) == 0) {
+            return true;
+        }
+    }
+    if (strcmp(word_bucket->word, word) == 0) {
+        return true;
+    }
+
     return false;
 }
+
 
 // Hashes word to a number
 unsigned int hash(const char *word)
 {
-    // TODO: Improve this hash function
-    int p = toupper(word[0]) - 'A';
-    return p % N;
+    int word_int = 0;
+    int l = strlen(word);
+
+    for (int i = 0; i < l; i++) {
+        if (isupper(word[i])) {
+            word_int += (word[i]) - 'A';
+        }
+        else {
+            word_int += (word[i]) - 'a';
+        }
+
+    }
+    return word_int % N;
 }
+
 
 bool load(const char *dictionary)
 {
@@ -42,34 +75,33 @@ bool load(const char *dictionary)
 
     if (source != NULL)
     {
-        char buffer[LENGTH+1];
+        char buffer[LENGTH+1];        
 
         while (fscanf(source, "%46s", buffer) != EOF) {
-            printf("%s\n", buffer);
+            // Define the hash and nodes to add to table
             int h = hash(buffer);
-
             node *new_node = malloc(sizeof(node));
+            node *last_node = table[h];
+
+            // Copy the word from buffer, add NULL to next
             strcpy(new_node->word, buffer);
+            new_node->next = NULL;
 
             if (table[h] == NULL) {
-                table[h] = new_node;
+                table[h] = new_node;                
             }
             else {
-                node *last_node = *table[h];
-
-                do {
-                    last_node = table[h]->next;
+                while (last_node->next != NULL) {
+                    last_node = last_node->next;
                 }
-                while (last_node->next != NULL)
-            }
-
-            last_node->next = new_node;
-            
+                last_node->next = new_node;
+            }                        
         }
     }
 
     // Close the dictionary file
     fclose(source);
+    return true;
 }
 
 // Returns number of words in dictionary if loaded, else 0 if not yet loaded
