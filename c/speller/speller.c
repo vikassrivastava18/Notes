@@ -12,7 +12,7 @@
 #undef getrusage
 
 // Default dictionary
-#define DICTIONARY "dictionaries/large"
+#define DICTIONARY "dictionaries/medium"
 
 // Prototype
 double calculate(const struct rusage *b, const struct rusage *a);
@@ -38,6 +38,8 @@ int main(int argc, char *argv[])
     // Load dictionary
     getrusage(RUSAGE_SELF, &before);
     bool loaded = load(dictionary);
+    
+
     getrusage(RUSAGE_SELF, &after);
 
     // Exit if dictionary not loaded
