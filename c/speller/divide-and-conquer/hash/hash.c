@@ -2,7 +2,7 @@
 #include <string.h>
 #include <ctype.h>
 
-#define N 1000
+#define N 100
 
 unsigned int hash(const char *word);
 
