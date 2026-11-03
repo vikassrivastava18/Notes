@@ -1,15 +1,16 @@
 // Find the first 10 fibonacci numberes that are also prime
 #include <stdio.h>
 
-
 bool is_prime(long long n);
 long long fibonacci(int n);
 
 int main(void) {
+    // 
     long long arr[10];
     int count = 0;
     int fib_count = 1;
 
+    // Keep looking for Fibonaccis that are also prime
     while (count < 10) {
         long long f = fibonacci(fib_count);
 
@@ -21,6 +22,7 @@ int main(void) {
         fib_count += 1;
     }
 
+    // Print the output
     for (int i = 0; i < count; i++) {
         printf("Number %d is %lld\n", i + 1, arr[i]);
     }

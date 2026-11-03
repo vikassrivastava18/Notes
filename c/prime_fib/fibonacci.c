@@ -1,7 +1,6 @@
 // Generates nth fibonacci number.
 
 #include <stdio.h>
-#include <stdlib.h>
 
 long long fibonacci(int n);
 
@@ -11,9 +10,12 @@ int main (int argc, char *argv[]) {
         printf("Usage ./fibonacci number\n");
         return 1;
     }
+
     int n = atoi(argv[1]);
+    // long long allows for massive numbers
     long long f = fibonacci(n);
     printf("Fibonacci of number %i is: %lld\n", n, f);
+
     return 0;
 }
 
@@ -22,6 +24,7 @@ long long fibonacci(int n) {
     if (n == 1 || n == 2) {
         return 1;
     }
+    // long long allows for massive numbers
     long long prev = 1;
     long long pre_prev = 1;
     long long fib;

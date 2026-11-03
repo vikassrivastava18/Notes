@@ -1,5 +1,4 @@
 // Checks whether a number is a prime
-
 #include <stdio.h>
 
 bool is_prime(long long n);
@@ -10,6 +9,7 @@ int main(void) {
     int number;
     scanf("%i", &number);
 
+    // Check for prime
     bool p = is_prime(number);
     if (p) {
         printf("Number is a prime\n");
