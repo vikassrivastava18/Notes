@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include "cs50.h"
 
+int* sort(int arr[]);
 bool binary(int arr[], int low, int high, int target);
 
 int main() {
@@ -17,8 +18,23 @@ int main() {
     } else {
         printf("Element not found.\n");
     }
-
     return 0;
+}
+
+int* sort(int arr[]) {
+    int size = sizeof(arr) / sizeof(arr[0]); // Correct way to get size in main()
+        
+    for (int i = size-1; i > 0; i--) {
+        for (int j = 0; j < i; j++) {
+            // Swap for ascending
+            if (arr[j] > arr[j+1]) {
+                int temp = arr[j];
+                arr[j] = arr[j+1];
+                arr[j+1] = temp;
+            }
+        }
+    }
+    return arr;
 }
 
 bool binary(int arr[], int low, int high, int target) {
@@ -38,3 +54,4 @@ bool binary(int arr[], int low, int high, int target) {
         return binary(arr, mid_ind+1, high, target);
     }
 }
+
