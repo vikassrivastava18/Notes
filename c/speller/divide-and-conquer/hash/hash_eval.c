@@ -77,7 +77,7 @@ unsigned int hash(const char *word)
         } else if (islower(character)) {
             word_value += (character - 'a') * i;
         } else {
-            // for '''
+            // for "'"
             word_value += 39;
         }
     }
